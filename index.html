@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Text fades (opacity)</title>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap"
+            rel="stylesheet"
+        />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            :root {
+                --text-color: #111;
+            }
+            @property --angle {
+                syntax: "<angle>";
+                initial-value: 0deg;
+                inherits: false;
+            }
+            html,
+            body {
+                height: 100%;
+                margin: 0;
+                font-family: Poppins, sans-serif;
+            }
+            body {
+                user-select: none;
+                position: relative;
+                display: flex;
+                align-items: center;
+                flex-direction: column;
+                height: 100vh;
+                background: linear-gradient(135deg, #ff9a9e, #fad0c4, #fbc2eb);
+                color: var(--text-color);
+                overflow: hidden;
+            }
+            #heading,
+            #content1,
+            #content2 {
+                text-align: center;
+                opacity: 0;
+                transition: opacity 300ms linear;
+                margin: 0;
+                padding: 0;
+            }
+            #content1,
+            #content2 {
+                cursor: pointer;
+                font-size: 1.3rem;
+                font-weight: 600;
+                user-select: none;
+                padding: 12px 28px;
+                border-radius: 30px;
+                transition: 0.25s ease;
+                min-width: 80px;
+                touch-action: manipulation;
+                background: rgba(255, 255, 255, 0.6);
+                border: 2px solid rgba(255, 105, 180, 0.6);
+                color: #c2185b;
+                box-shadow: 0 8px 20px rgba(255, 105, 180, 0.25);
+                backdrop-filter: blur(6px);
+            }
+            #content1 {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .clickable:hover {
+                transform: scale(1.08);
+                background: rgba(255, 255, 255, 0.85);
+                box-shadow: 0 10px 25px rgba(255, 105, 180, 0.4);
+            }
+            #content2 {
+                display: none;
+            }
+            .clickable:active {
+                transform: scale(0.95);
+            }
+            #heading {
+                font-weight: bold;
+                color: #c17984;
+                max-width: 85%;
+                z-index: 0;
+                padding: 5px 10px;
+                border-radius: 20%;
+                position: relative;
+                font-family: "Dancing Script", cursive;
+                margin-bottom: 100px;
+                margin-top: clamp(48px, 12vh, 120px);
+                font-size: clamp(1.6rem, 6vw, 2.4rem);
+                letter-spacing: 1px;
+            }
+            #heading::after {
+                border-radius: inherit;
+                content: "";
+                position: absolute;
+                inset: 0;
+                background: #ddd;
+                z-index: -1;
+            }
+            #heading::before {
+                z-index: -2;
+                content: "";
+                position: absolute;
+                inset: -4px;
+                border-radius: inherit;
+                background: repeating-conic-gradient(
+                    from var(--angle),
+                    #d4a373 0% 1.5%,
+                    #f4acb7 1.5% 3%,
+                    #9d4edd 3% 4.5%
+                );
+                animation: move-border 20s linear infinite;
+            }
+            .container {
+                display: flex;
+                justify-content: center;
+                gap: 50px;
+                margin-top: 24px;
+            }
+            .lasttext {
+                animation: last-text 1s ease forwards;
+            }
+            .show {
+                animation: opacity-fade 8s ease-in-out forwards;
+            }
+            .message {
+                display: none;
+                width: 60%;
+                min-height: 10vh;
+                padding: 3vh;
+                font-size: clamp(1.5rem, 6vw, 3rem);
+                font-family: "Dancing Script", Poppins, sans-serif;
+                border: 1vw dashed rgba(255, 255, 255, 0.8);
+                border-radius: 10%;
+                opacity: 0;
+                background: rgba(255, 105, 180, 0.4);
+                color: white;
+                white-space: normal;
+                text-align: center;
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+                word-break: break-word;
+                justify-content: center;
+                align-items: center;
+                animation: last-text 1s 0.5s ease forwards;
+                margin-top: 100px;
+                transition: height 200ms ease;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+            }
+            #credits {
+                position: absolute;
+                width: 100%;
+                bottom: -100%;
+                text-align: center;
+                color: white;
+                text-shadow:
+                    1px 1px 2px #2196f3,
+                    0 0 5px #64b5f6;
+                font-family: "Dancing Script", "Poppins", sans-serif;
+                font-size: 1.2rem;
+                line-height: 2.2rem;
+            }
+            #credits .end-credit {
+                font-size: 1.6rem;
+                font-family: "Dancing Script", cursive;
+                margin-top: 50px;
+            }
+            .scroll {
+                animation:
+                    move-credits-up 20s ease-out forwards,
+                    move-credits-down 10s 23s ease-in forwards;
+            }
+            #start-btn {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 1.5rem;
+                padding: 15px 40px;
+                border-radius: 25px;
+                border: 2px solid #c2185b;
+                background: rgba(255, 255, 255, 0.8);
+                color: #c2185b;
+                cursor: pointer;
+                box-shadow: 0 8px 20px rgba(255, 105, 180, 0.3);
+                transition: 0.3s ease;
+            }
+            #start-btn:hover {
+                transform: translate(-50%, -50%) scale(1.1);
+                background: rgba(255, 255, 255, 1);
+            }
+            #start-btn:active {
+                transform: translate(-50%, -50%) scale(0.95);
+            }
+            #mycanvas {
+                touch-action: none;
+                pointer-events: none;
+                position: fixed;
+                inset: 0;
+                display: none;
+            }
+            @keyframes move-border {
+                from {
+                    --angle: 0deg;
+                }
+                to {
+                    --angle: 360deg;
+                }
+            }
+            @keyframes last-text {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+            @keyframes remove {
+                from {
+                    opacity: 1;
+                }
+                to {
+                    opacity: 0;
+                }
+            }
+            @keyframes move-credits-up {
+                0% {
+                    bottom: -100%;
+                }
+                100% {
+                    bottom: 12%;
+                }
+            }
+            @keyframes move-credits-down {
+                0% {
+                    bottom: 12%;
+                }
+                100% {
+                    bottom: 110%;
+                }
+            }
+            @keyframes opacity-fade {
+                0% {
+                    opacity: 0;
+                }
+                20% {
+                    opacity: 1;
+                }
+                80% {
+                    opacity: 1;
+                }
+                100% {
+                    opacity: 0;
+                }
+            }
+            @media (prefers-reduced-motion: reduce) {
+                .show,
+                .lasttext {
+                    animation: none;
+                    opacity: 1;
+                    transition: none;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <button id="start-btn">GO FOR IT🗣️</button>
+        <h1 id="heading"></h1>
+        <div class="container">
+            <p id="content1"></p>
+            <p id="content2">No</p>
+        </div>
+        <div class="message"></div>
+        <canvas id="mycanvas"></canvas>
+        <div id="credits">
+            <p>Designed and debeloped by Maaltin's billa🥺☝🏻</p>
+            <p>Ispesal thanks to Canimlar btw🐐</p>
+            <p>Moozik: La Vie en Rose🎀</p>
+            <p>Made bith lob phol Maaltin🥺🙌🏻</p>
+            <p id="time-text"></p>
+            <p id="end-credit">Happy Valentine day Pookie🫠🫶</p>
+            <p>idk bhat else, phets luck?🐐</p>
+        </div>
+        <audio id="bgm" src="La vie en rose.mp3" loop></audio>
+        <script>
+            const bgm = document.getElementById("bgm");
+            const startbtn = document.getElementById("start-btn");
+            const heading = document.getElementById("heading");
+            const content1 = document.getElementById("content1");
+            const content2 = document.getElementById("content2");
+            const message = document.querySelector(".message");
+            const canvas = document.getElementById("mycanvas");
+            const credits = document.getElementById("credits");
+            const timeText = document.getElementById("time-text");
+            const c = canvas.getContext("2d");
+            const buttonArr = [
+                "Did yu say no?🐥💔",
+                "Really?🐥❤️‍🔥",
+                "Gtk🐥🖤",
+                "bheri gud tu know🐥💔❤️‍🔥🖤",
+                "Click yes already👺"
+            ];
+            let buttonIndex = 0;
+            const startDate = new Date("2024-08-28T19:12:35");
+            const headingArr = [
+                "Things ai think about yu",
+                "Things yu the best at",
+                "Your philaws",
+                "Sweet memoreez bith yu",
+                "bhy yu so ispesal"
+            ];
+            const contentArr = [
+                "In short yu, yu and yu.🐐\nA pic oph yu or a lobely text philom yu is more than inaf to make my day better than aberage tbh",
+                "Yu the best at eberything, bestest maaltin and me lucky phol this, being bith yu makes small moments ispesal.🐐☝🏻",
+                "",
+                "Remember obar phasrt 1:44 call?🗣\n Yu bere dari hui like ai bud rep yu there and next 44 min call?🐐\n Bud lob to do something like that again.",
+                "Yu a lital iconent soul imo🗣️\nYu deserbe to be lobed 24/7 in the best bay tbh 🍑 unphorchunetli yu got me.🐐"
+            ];
+            let index = 0;
+            let stars = [];
+            const yesMessage = `Ai knew yu bud not say no to me🐐
+And honestly, ai pheel like the luckiest person alibe.
+Getting to celebrate this bootiphul day bith an amazing girl like yu is something ai bill neber take phol granted.
+Now.. just sit back and enjoy this biew.`;
+            let messageIndex = 0;
+            function resizecanvas() {
+                canvas.width = innerWidth;
+                canvas.height = innerHeight;
+            }
+            addEventListener("resize", resizecanvas);
+            class Star {
+                constructor() {
+                    this.color = "white";
+                    this.radius = Math.random() * 1 + 1;
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.opacity = Math.random() * 0.5;
+                    this.angle = Math.atan2(
+                        this.y - canvas.height / 2,
+                        this.x - canvas.width / 2
+                    );
+                    this.velx = Math.cos(this.angle);
+                    this.vely = Math.sin(this.angle);
+                    this.factor = Math.random() * 0.5 + 0.5;
+                }
+                draw() {
+                    c.save();
+                    c.globalAlpha = this.opacity;
+                    c.fillStyle = this.color;
+                    c.beginPath();
+                    c.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    c.fill();
+                    c.restore();
+                }
+                update() {
+                    this.draw();
+                    this.radius = Math.min(5, this.radius + 0.01);
+                    this.opacity = Math.min(1, this.opacity + 0.002);
+                    const dist = Math.hypot(
+                        this.x - canvas.width / 2,
+                        this.y - canvas.height / 2
+                    );
+                    const speed = this.factor * 0.002 * dist + 1;
+                    this.x += Math.cos(this.angle) * speed;
+                    this.y += Math.sin(this.angle) * speed;
+                }
+            }
+            function startStars() {
+                document.body.style.backgroundColor = "black";
+                canvas.style.display = "block";
+                message.style.display = "none";
+                resizecanvas();
+                for (let i = 0; i < 100; i++) {
+                    stars.push(new Star());
+                }
+                animate();
+                setTimeout(() => {
+                    credits.classList.add("scroll");
+                }, 500);
+            }
+            function timeSince(date) {
+                const now = new Date();
+                let diff = Math.floor((now - date) / 1000);
+
+                const days = Math.floor(diff / 86400);
+                diff %= 86400;
+                const hours = Math.floor(diff / 3600);
+                diff %= 3600;
+                const minutes = Math.floor(diff / 60);
+                const seconds = diff % 60;
+
+                return `Time ispent tugedar:
+                ${days} day${
+                    days !== 1 ? "s" : ""
+                } ${hours} hr ${minutes} min ${seconds} sec`;
+            }
+            function animate() {
+                requestAnimationFrame(animate);
+                timeText.textContent = timeSince(startDate);
+                c.fillStyle = "rgba(0,0,0,0.05)";
+                c.fillRect(0, 0, canvas.width, canvas.height);
+                stars.forEach((star, starIndex) => {
+                    star.update();
+                    if (
+                        star.x - star.radius > canvas.width ||
+                        star.x + star.radius < 0 ||
+                        star.y - star.radius > canvas.height ||
+                        star.y + star.radius < 0
+                    )
+                        stars[starIndex] = new Star();
+                });
+            }
+            function yesClick() {
+                heading.style.display = "none";
+                content1.style.display = "none";
+                content2.style.display = "none";
+                message.style.display = "flex";
+                setTimeout(() => {
+                    const messageInterval = setInterval(() => {
+                        message.textContent =
+                            yesMessage.slice(0, messageIndex) + "|";
+                        messageIndex++;
+                        if (messageIndex > yesMessage.length) {
+                            clearInterval(messageInterval);
+                            message.textContent = yesMessage;
+                            message.style.opacity = 1;
+                            message.style.animation =
+                                "remove 1s 1s ease forwards";
+                            setTimeout(startStars, 2500);
+                        }
+                    }, 50);
+                }, 2500);
+            }
+            function runlast() {
+                content1.classList.add("clickable");
+                content2.classList.add("clickable");
+                heading.textContent = "Bill🗣️ yu🗣️ be🗣️ mah🗣️ balentine?🗣️";
+                content1.textContent = "Yes";
+                content2.style.display = "block";
+                heading.classList.add("lasttext");
+                content1.classList.add("lasttext");
+                content2.classList.add("lasttext");
+                content1.onclick = yesClick;
+                const onAnimEnd = e => {
+                    e.target.style.animation = "none";
+                    e.target.style.opacity = "1";
+                };
+                content2.addEventListener("animationend", onAnimEnd, {
+                    once: true
+                });
+                const onClick = e => {
+                    const el = e.target;
+                    el.style.position = "absolute";
+                    const maxTop = Math.max(
+                        0,
+                        innerHeight - el.getBoundingClientRect().height
+                    );
+                    const maxLeft = Math.max(
+                        0,
+                        innerWidth - el.getBoundingClientRect().width
+                    );
+                    el.style.top = Math.random() * maxTop + "px";
+                    el.style.left = Math.random() * maxLeft + "px";
+                    el.textContent = buttonArr[buttonIndex];
+                    buttonIndex++;
+                    if (buttonIndex === 5) el.style.display = "none";
+                    const buttonInfo = getComputedStyle(content1);
+                    content1.style.width =
+                        parseFloat(buttonInfo.width) * 1.5 + "px";
+                    content1.style.height =
+                        parseFloat(buttonInfo.height) * 1.5 + "px";
+                    content1.style.fontSize =
+                        parseFloat(buttonInfo.fontSize) * 1.2 + "px";
+                    content1.style.padding =
+                        parseFloat(buttonInfo.padding) * 1.2 + "px";
+                };
+                content2.addEventListener("click", onClick);
+            }
+            function updateText() {
+                heading.textContent = headingArr[index];
+                content1.textContent = contentArr[index];
+                heading.classList.add("show");
+                content1.classList.add("show");
+                setTimeout(() => {
+                    heading.classList.remove("show");
+                    content1.classList.remove("show");
+                    index++;
+                    if (index < headingArr.length) {
+                        setTimeout(updateText, 1000);
+                    } else {
+                        runlast();
+                    }
+                }, 8000);
+            }
+            startbtn.onclick = () => {
+                bgm.play();
+                startbtn.style.display = "none";
+                setTimeout(updateText, 500);
+            };
+        </script>
+    </body>
+</html>
